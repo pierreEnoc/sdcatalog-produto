@@ -34,4 +34,12 @@ public class CategoryService {
 		return new CategoryDTO(entity);
 	}
 
+	public CategoryDTO inset(CategoryDTO dto) {
+		Category entity = new Category();
+		entity.setName(dto.getName());
+		entity = categoryRepository.save(entity);
+		
+		return new CategoryDTO(entity);
+	}
+
 }
