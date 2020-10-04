@@ -16,8 +16,9 @@ import com.pierredev.catalog.services.exceptions.ResourceNotFoundException;
 @ControllerAdvice
 public class ResourceExceptionHandler {
 	
-	@ExceptionHandler(EntityNotFoundException.class)
-	public ResponseEntity<StandardError> entetityNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+	//@ExceptionHandler(EntityNotFoundException.class)
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<StandardError> entityNotFound(ResourceNotFoundException e, HttpServletRequest request) {
 		HttpStatus status = HttpStatus.NOT_FOUND;
 		StandardError err = new StandardError();
 		err.setTimestamp(Instant.now());
