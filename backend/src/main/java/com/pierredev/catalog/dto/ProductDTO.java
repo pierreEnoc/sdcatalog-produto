@@ -36,7 +36,6 @@ public ProductDTO(Long id, String name, String description, Double price, String
 }
 
 public ProductDTO(Product entity) {
-	super();
 	this.id = entity.getId();
 	this.name = entity.getName();
 	this.description = entity.getDescription();

@@ -24,14 +24,15 @@ import com.pierredev.catalog.services.ProductService;
 @RestController
 @RequestMapping(value="/products")
 public class ProductResource {
+	
 	@Autowired
 	private ProductService productServise;
 	
-	@GetMapping
+     @GetMapping
 	public ResponseEntity<Page<ProductDTO>> findAll(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
-			@RequestParam(value = "orderBy", defaultValue = "product") String orderBy,
+			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
 			@RequestParam(value = "direction", defaultValue = "ASC") String direction
 			){
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction),orderBy);
@@ -39,6 +40,8 @@ public class ProductResource {
 		Page<ProductDTO> list = productServise.findAllPaged(pageRequest);
 		return ResponseEntity.ok().body(list);
 	}
+
+	
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {

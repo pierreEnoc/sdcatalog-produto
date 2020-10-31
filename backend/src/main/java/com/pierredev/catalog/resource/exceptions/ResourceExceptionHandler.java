@@ -2,7 +2,6 @@ package com.pierredev.catalog.resource.exceptions;
 
 import java.time.Instant;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import com.pierredev.catalog.services.exceptions.ResourceNotFoundException;
 @ControllerAdvice
 public class ResourceExceptionHandler {
 	
-	//@ExceptionHandler(EntityNotFoundException.class)
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<StandardError> entityNotFound(ResourceNotFoundException e, HttpServletRequest request) {
 		HttpStatus status = HttpStatus.NOT_FOUND;
