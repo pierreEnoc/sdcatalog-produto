@@ -1,5 +1,9 @@
 package com.pierredev.catalog.repositories;
 
-public interface RoleRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.pierredev.catalog.entities.Role;
+
+public interface RoleRepository extends JpaRepository<Role, Long>{
 
 }

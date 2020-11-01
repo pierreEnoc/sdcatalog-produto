@@ -2,6 +2,8 @@ package com.pierredev.catalog.dto;
 
 import java.io.Serializable;
 
+import com.pierredev.catalog.entities.Role;
+
 public class RoleDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -19,6 +21,13 @@ public class RoleDTO implements Serializable {
 		super();
 		this.id = id;
 		this.authority = authority;
+	}
+
+
+	public RoleDTO(Role role) {
+	
+		this.id = role.getId();
+		this.authority = role.getAuthority();
 	}
 
 
