@@ -16,7 +16,6 @@ public class RoleDTO implements Serializable {
 		
 	}
 
-
 	public RoleDTO(Long id, String authority) {
 		super();
 		this.id = id;
@@ -25,9 +24,9 @@ public class RoleDTO implements Serializable {
 
 
 	public RoleDTO(Role role) {
-	
-		this.id = role.getId();
-		this.authority = role.getAuthority();
+	    super();
+		id = role.getId();
+		authority = role.getAuthority();
 	}
 
 
@@ -50,6 +49,7 @@ public class RoleDTO implements Serializable {
 	public void setAuthority(String authority) {
 		this.authority = authority;
 	}
+	
 	
 
 }
