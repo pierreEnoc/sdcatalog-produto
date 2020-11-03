@@ -2,6 +2,8 @@ package com.pierredev.catalog.resource;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,8 +43,6 @@ public class UserResource {
 		Page<UserDTO> list = productServise.findAllPaged(pageRequest);
 		return ResponseEntity.ok().body(list);
 	}
-
-	
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
