@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pierredev.catalog.dto.UserDTO;
 import com.pierredev.catalog.dto.UserInsertDTO;
+import com.pierredev.catalog.dto.UserUpdateDTO;
 import com.pierredev.catalog.services.UserService;
 
 @RestController
@@ -29,7 +30,7 @@ import com.pierredev.catalog.services.UserService;
 public class UserResource {
 	
 	@Autowired
-	private UserService productServise;
+	private UserService userServise;
 	
      @GetMapping
 	public ResponseEntity<Page<UserDTO>> findAll(
@@ -40,33 +41,33 @@ public class UserResource {
 			){
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction),orderBy);
 		
-		Page<UserDTO> list = productServise.findAllPaged(pageRequest);
+		Page<UserDTO> list = userServise.findAllPaged(pageRequest);
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
-		UserDTO dto = productServise.findById(id);
+		UserDTO dto = userServise.findById(id);
 		return ResponseEntity.ok().body(dto);
 	}
 	
 	@PostMapping
-	public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO dto) {
-		UserDTO newDto = productServise.insert(dto);
+	public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserInsertDTO dto) {
+		UserDTO newDto = userServise.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 					.buildAndExpand(newDto.getId()).toUri();
 		return ResponseEntity.created(uri).body(newDto);
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO>update(@PathVariable Long id, @RequestBody UserDTO dto){
-		dto = productServise.update(id, dto);
-		return ResponseEntity.ok().body(dto);
+	public ResponseEntity<UserDTO>update(@Valid @PathVariable Long id, @RequestBody UserUpdateDTO dto){
+		UserDTO newdto = userServise.update(id, dto);
+		return ResponseEntity.ok().body(newdto);
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<UserDTO>delete(@PathVariable Long id) {
-		productServise.delete(id);
+		userServise.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 }
