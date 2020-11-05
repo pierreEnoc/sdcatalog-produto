@@ -8,9 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import com.pierredev.catalog.entities.User;
-import com.pierredev.catalog.services.validation.UserInsertValid;
 
-//@UserInsertValid
+
 public class UserDTO  implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
