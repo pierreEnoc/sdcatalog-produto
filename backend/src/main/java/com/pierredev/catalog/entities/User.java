@@ -136,7 +136,6 @@ public class User implements UserDetails, Serializable {
 
 	@Override
 	public String getUsername() {
-		
 		return email;
 	}
 
@@ -152,7 +151,7 @@ public class User implements UserDetails, Serializable {
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override

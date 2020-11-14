@@ -35,6 +35,7 @@ import com.pierredev.catalog.services.exceptions.ResourceNotFoundException;
 public class UserService implements UserDetailsService {
 	
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
+	
 	@Autowired
 	private UserRepository userRepository;
 	
