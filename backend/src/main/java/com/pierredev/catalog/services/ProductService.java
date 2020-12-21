@@ -33,7 +33,7 @@ public class ProductService {
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> findAllPaged(Long categoryId, String name, PageRequest pageRequest) {
 		Category category = (categoryId == 0) ? null : categoryRepository.getOne(categoryId);
-		Page<Product> list = productRepository.find(category, name, pageRequest);
+		Page<Product> list = productRepository.find(category, name.trim(), pageRequest);
 
 		return list.map(x -> new ProductDTO(x));
 	}
