@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.pierredev.catalog.entities.Product;
 import com.pierredev.catalog.repositories.ProductRepository;
@@ -18,16 +19,18 @@ public class ProductRepositoryTests {
 	private ProductRepository repository;
 	
 	private long existingId;
+	private long nonExistingId;
 	
 	@BeforeEach
 	void setUp() throws Exception {
 		existingId = 1L;
+		nonExistingId = 1000L;
 	}
 	
 	
 	
 	@Test
-	public void deleteShouldDeleteObjectWhwnIdExists() {
+	public void deleteShouldDeleteObjectWhwenIdExists() {
 		
 		repository.deleteById(existingId);
 		
@@ -35,5 +38,13 @@ public class ProductRepositoryTests {
 		
 		Assertions.assertFalse(result.isPresent());
 	}
-
+	
+	
+	@Test
+	public void deleteShouldThrowsEmptyResultDataAccessExceptionWhwenIdDoesNotExist() {
+		
+		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
+			repository.deleteById(nonExistingId);
+		});
+	}
 }
