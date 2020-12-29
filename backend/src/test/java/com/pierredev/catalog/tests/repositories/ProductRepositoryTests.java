@@ -25,6 +25,7 @@ public class ProductRepositoryTests {
 	private long nonExistingId;
 	private long countTotalProducts;
 	private long countPCGamerProducts;
+	private PageRequest pageRequest;
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -32,33 +33,38 @@ public class ProductRepositoryTests {
 		nonExistingId = 1000L;
 		countTotalProducts = 25L;
 		countPCGamerProducts = 21L;
-
+		pageRequest = PageRequest.of(0, 10);
+	}
+	
+	@Test
+	public void findShouldReturnAllProductsWhenNameIsEmpty() {
+		String name = "";
+				
+		Page<Product> result = repository.find(null, name, pageRequest);
+		
+		Assertions.assertFalse(result.isEmpty());
+		Assertions.assertEquals(countTotalProducts, result.getTotalElements());
 	}
 	
 	@Test
 	public void findShouldReturnProductsWhenNameExistsIgnoringCase() {
 		String name = "pc gAmer";
-		PageRequest pageRequest = PageRequest.of(0, 10);
-		
+				
 		Page<Product> result = repository.find(null, name, pageRequest);
 		
 		Assertions.assertFalse(result.isEmpty());
 		Assertions.assertEquals(countPCGamerProducts, result.getTotalElements());
-		
 	}
 	
 	@Test
 	public void findShouldReturnProductsWhenNameExists() {
 		String name = "PC Gamer";
-		PageRequest pageRequest = PageRequest.of(0, 10);
 		
 		Page<Product> result = repository.find(null, name, pageRequest);
 		
 		Assertions.assertFalse(result.isEmpty());
 		Assertions.assertEquals(countPCGamerProducts, result.getTotalElements());
-		
 	}
-	
 	
 	@Test
 	public void saveShouldPersisWithAutoincrementWhendIdsNull() {
@@ -71,8 +77,7 @@ public class ProductRepositoryTests {
 		Assertions.assertNotNull(product.getId());
 		Assertions.assertEquals(countTotalProducts + 1L, product.getId());
 		Assertions.assertTrue(result.isPresent());
-		Assertions.assertSame(result.get(), product);
-		
+		Assertions.assertSame(result.get(), product);	
 	}
 		
 	@Test
