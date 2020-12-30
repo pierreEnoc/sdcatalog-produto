@@ -61,7 +61,7 @@ public class ProductServiceTests {
 	}
 	
 	@Test
-	public void deleteShouldThrowDatabaseExceptionDoesNotExists() {
+	public void deleteShouldThrowDatabaseExceptionWhenDependentId() {
 		
 		Assertions.assertThrows(DatabaseException.class, () -> {
 			service.delete(dependentId);
