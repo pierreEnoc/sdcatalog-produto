@@ -2,14 +2,12 @@ package com.pierredev.catalog.test.web;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 
 import java.util.List;
 
@@ -80,27 +78,28 @@ public class ProductResourceTests {
 						.accept(MediaType.APPLICATION_JSON));
 		
 				result.andExpect(status().isOk());
-				
+				result.andExpect(jsonPath("$.content").exists());		
 	}
 	
 	@Test
 	public void findByIdShouldReturnProductWhenIdExists() throws Exception {
 		ResultActions result = 
-				mockMvc.perform(get("/products/{id}", nonExistingId)
+				mockMvc.perform(get("/products/{id}", existingId)
 						.accept(MediaType.APPLICATION_JSON));
 		
-				result.andExpect(status().isNotFound());
+				result.andExpect(status().isOk());
+				result.andExpect(jsonPath("$.id").exists());
+				result.andExpect(jsonPath("$.id").value(existingId));			
 	}
 	
 	@Test
 	public void findByIdShouldReturnProductWhenIdDoesNotExist() throws Exception  {
 		
 		ResultActions result = 
-				mockMvc.perform(get("/products/{id}", existingId)
+				mockMvc.perform(get("/products/{id}", nonExistingId)
 						.accept(MediaType.APPLICATION_JSON));
 		
-				result.andExpect(status().isOk());
-		
+				result.andExpect(status().isNotFound());	
 	}
 	
 	private String obtainAccessToken(String username, String password) throws Exception {
