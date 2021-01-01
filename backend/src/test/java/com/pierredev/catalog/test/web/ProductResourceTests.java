@@ -1,13 +1,13 @@
 package com.pierredev.catalog.test.web;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 
 import java.util.List;
 
@@ -29,6 +29,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.pierredev.catalog.dto.ProductDTO;
 import com.pierredev.catalog.services.ProductService;
+import com.pierredev.catalog.services.exceptions.DatabaseException;
 import com.pierredev.catalog.services.exceptions.ResourceNotFoundException;
 import com.pierredev.catalog.test.factory.ProductFactory;
 
@@ -54,20 +55,35 @@ public class ProductResourceTests {
 	private ProductDTO newProductDTO;
 	private ProductDTO existingProductDTO;
 	private PageImpl<ProductDTO> page;
+	private Long dependentId;
 	
 	@BeforeEach
 	void setup() throws Exception {
 		existingId = 1L;
 		nonExistingId = 2L;
+		dependentId = 3L;
 		
 		newProductDTO = ProductFactory.createProductDTO(null);
 		existingProductDTO = ProductFactory.createProductDTO(existingId);
 		
 		page = new PageImpl<>(List.of(existingProductDTO));
+		
 
 		Mockito.when(service.findById(existingId)).thenReturn(existingProductDTO);
 		Mockito.when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
+		
 		Mockito.when(service.findAllPaged(any(), anyString(), any())).thenReturn(page);
+		
+		Mockito.when(service.insert(any())).thenReturn(existingProductDTO);
+		
+		Mockito.when(service.update(eq(existingId), any())).thenReturn(existingProductDTO);
+		Mockito.when(service.update(eq(nonExistingId), any())).thenThrow(ResourceNotFoundException.class);
+
+		Mockito.doNothing().when(service).delete(existingId);
+		Mockito.doThrow(ResourceNotFoundException.class).when(service).delete(nonExistingId);
+		Mockito.doThrow(DatabaseException.class).when(service).delete(dependentId);
+
+		
 	}
 	
 	
