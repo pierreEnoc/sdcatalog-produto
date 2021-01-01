@@ -6,16 +6,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-//import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 import java.util.List;
 
@@ -40,6 +34,7 @@ import com.pierredev.catalog.services.ProductService;
 import com.pierredev.catalog.services.exceptions.ResourceNotFoundException;
 import com.pierredev.catalog.test.factory.ProductFactory;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProductResourceTests {
@@ -60,6 +55,7 @@ public class ProductResourceTests {
 	private Long nonExistingId;
 	private ProductDTO newProductDTO;
 	private ProductDTO existingProductDTO;
+	private PageImpl<ProductDTO> page;
 	
 	@BeforeEach
 	void setup() throws Exception {
@@ -68,10 +64,24 @@ public class ProductResourceTests {
 		
 		newProductDTO = ProductFactory.createProductDTO(null);
 		existingProductDTO = ProductFactory.createProductDTO(existingId);
+		
+		page = new PageImpl<>(List.of(existingProductDTO));
 
 		Mockito.when(service.findById(existingId)).thenReturn(existingProductDTO);
 		Mockito.when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
-	}	
+		Mockito.when(service.findAllPaged(any(), anyString(), any())).thenReturn(page);
+	}
+	
+	
+	@Test
+	public void findAllShouldReturnPage() throws Exception {
+		ResultActions result = 
+				mockMvc.perform(get("/products")
+						.accept(MediaType.APPLICATION_JSON));
+		
+				result.andExpect(status().isOk());
+				
+	}
 	
 	@Test
 	public void findByIdShouldReturnProductWhenIdExists() throws Exception {
