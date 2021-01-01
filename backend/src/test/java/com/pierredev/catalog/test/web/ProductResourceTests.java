@@ -135,8 +135,6 @@ public class ProductResourceTests {
 		result.andExpect(jsonPath("$.id").value(existingId));
 		result.andExpect(jsonPath("$.name").value(expectedName));
 		result.andExpect(jsonPath("$.price").value(expectedPrice));
-
-
 	}
 	
 	
