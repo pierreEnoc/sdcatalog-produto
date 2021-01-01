@@ -1,13 +1,14 @@
 package com.pierredev.catalog.test.web;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pierredev.catalog.dto.ProductDTO;
 import com.pierredev.catalog.services.ProductService;
 import com.pierredev.catalog.services.exceptions.DatabaseException;
@@ -43,6 +45,8 @@ public class ProductResourceTests {
 	
 	@MockBean
 	private ProductService service;
+	
+	private ObjectMapper objectMapper;
 
 	@Value("${security.oauth2.client.client-id}")
 	private String clientId;
@@ -57,8 +61,15 @@ public class ProductResourceTests {
 	private PageImpl<ProductDTO> page;
 	private Long dependentId;
 	
+	private String operatorUsername;
+	private String operatorPassword;
+	
 	@BeforeEach
 	void setup() throws Exception {
+		
+		operatorUsername = "alex@gmail.com";
+		operatorPassword = "123456";
+		
 		existingId = 1L;
 		nonExistingId = 2L;
 		dependentId = 3L;
@@ -82,8 +93,50 @@ public class ProductResourceTests {
 		Mockito.doNothing().when(service).delete(existingId);
 		Mockito.doThrow(ResourceNotFoundException.class).when(service).delete(nonExistingId);
 		Mockito.doThrow(DatabaseException.class).when(service).delete(dependentId);
-
+	
+	}
+	
+	@Test
+	public void updateShouldReturnProductDTOWhenIdExists() throws Exception {
 		
+		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
+		
+		String jsonBody = objectMapper.writeValueAsString(newProductDTO);
+		
+		ResultActions result =
+				mockMvc.perform(put("/products/{id}", existingId)
+						.header("Authorization", "Bear " + accessToken)
+						.content(jsonBody)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
+		
+		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
+		
+		String jsonBody = objectMapper.writeValueAsString(newProductDTO);
+		
+		String expectedName = newProductDTO.getName();
+		Double expectedPrice = newProductDTO.getPrice();
+		
+		ResultActions result =
+				mockMvc.perform(put("/products/{id}", nonExistingId)
+						.header("Authorization", "Bear " + accessToken)
+						.content(jsonBody)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isNotFound());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.id").value(existingId));
+		result.andExpect(jsonPath("$.name").value(expectedName));
+		result.andExpect(jsonPath("$.price").value(expectedPrice));
+
+
 	}
 	
 	
