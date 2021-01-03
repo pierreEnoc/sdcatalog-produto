@@ -99,6 +99,30 @@ public class ProductResourceTests {
 	}
 
 	@Test
+	public void updateShouldReturnProductDTOWhenIdExist() throws Exception {
+
+		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
+
+		String jsonBody = objectMapper.writeValueAsString(newProductDTO);
+
+		String expectedName = newProductDTO.getName();
+		Double expectedPrice = newProductDTO.getPrice();
+
+		ResultActions result =
+				mockMvc.perform(put("/products/{id}", existingId)
+						.header("Authorization", "Bearer " + accessToken)
+						.content(jsonBody)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.id").value(existingId));
+		result.andExpect(jsonPath("$.name").value(expectedName));
+		result.andExpect(jsonPath("$.price").value(expectedPrice));
+	}
+
+	@Test
 	public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
 
 		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
@@ -116,10 +140,6 @@ public class ProductResourceTests {
 						.accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isNotFound());
-		//result.andExpect(jsonPath("$.id").exists());
-		//result.andExpect(jsonPath("$.id").value(existingId));
-		//result.andExpect(jsonPath("$.name").value(expectedName));
-		//result.andExpect(jsonPath("$.price").value(expectedPrice));
 	}
 
 
