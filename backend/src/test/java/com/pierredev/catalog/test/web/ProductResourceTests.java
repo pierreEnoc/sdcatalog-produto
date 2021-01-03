@@ -3,6 +3,7 @@ package com.pierredev.catalog.test.web;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,7 +46,8 @@ public class ProductResourceTests {
 	
 	@MockBean
 	private ProductService service;
-	
+
+	@Autowired
 	private ObjectMapper objectMapper;
 
 	@Value("${security.oauth2.client.client-id}")
@@ -95,49 +97,32 @@ public class ProductResourceTests {
 		Mockito.doThrow(DatabaseException.class).when(service).delete(dependentId);
 	
 	}
-	
-//	@Test
-	//public void updateShouldReturnProductDTOWhenIdExists() throws Exception {
-		
-//		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
-		
-	//	String jsonBody = objectMapper.writeValueAsString(newProductDTO);
-		
-	//	ResultActions result =
-		//		mockMvc.perform(put("/products/{id}", existingId)
-			//			.header("Authorization", "Bear " + accessToken)
-				//		.content(jsonBody)
-					//	.contentType(MediaType.APPLICATION_JSON)
-						//.accept(MediaType.APPLICATION_JSON));
-		
-		//result.andExpect(status().isOk());
-	//}
-	
-//	@Test
-//	public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
-//		
-//		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
-//		
-//		String jsonBody = objectMapper.writeValueAsString(newProductDTO);
-//		
-//		String expectedName = newProductDTO.getName();
-//		Double expectedPrice = newProductDTO.getPrice();
-		
-//		ResultActions result =
-//				mockMvc.perform(put("/products/{id}", nonExistingId)
-//						.header("Authorization", "Bear " + accessToken)
-//						.content(jsonBody)
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.accept(MediaType.APPLICATION_JSON));
-		
-//		result.andExpect(status().isNotFound());
-//		result.andExpect(jsonPath("$.id").exists());
-//		result.andExpect(jsonPath("$.id").value(existingId));
-//		result.andExpect(jsonPath("$.name").value(expectedName));
-//		result.andExpect(jsonPath("$.price").value(expectedPrice));
-//	}
-	
-	
+
+	@Test
+	public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
+
+		String accessToken = obtainAccessToken(operatorUsername, operatorPassword);
+
+		String jsonBody = objectMapper.writeValueAsString(newProductDTO);
+
+		String expectedName = newProductDTO.getName();
+		Double expectedPrice = newProductDTO.getPrice();
+
+		ResultActions result =
+				mockMvc.perform(put("/products/{id}", nonExistingId)
+						.header("Authorization", "Bearer " + accessToken)
+						.content(jsonBody)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isNotFound());
+		//result.andExpect(jsonPath("$.id").exists());
+		//result.andExpect(jsonPath("$.id").value(existingId));
+		//result.andExpect(jsonPath("$.name").value(expectedName));
+		//result.andExpect(jsonPath("$.price").value(expectedPrice));
+	}
+
+
 	@Test
 	public void findAllShouldReturnPage() throws Exception {
 		ResultActions result = 
@@ -180,7 +165,7 @@ public class ProductResourceTests {
 	    ResultActions result 
 	    	= mockMvc.perform(post("/oauth/token")
 	    		.params(params)
-	    		//.with(httpBasic(clientId, clientSecret))
+	    		.with(httpBasic(clientId, clientSecret))
 	    		.accept("application/json;charset=UTF-8"))
 	        	.andExpect(status().isOk())
 	        	.andExpect(content().contentType("application/json;charset=UTF-8"));
